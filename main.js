@@ -195,7 +195,18 @@ $(function () {
         $("body").toggleClass("hidden_body");
     });
 
-    function convertFormToJSON(r) { var e = $(r).serializeArray(), n = {}; return $.each(e, function () { n[this.name] = this.value || "" }), n }
+    function convertFormToJSON(_form) {
+        var fields = $(_form).serializeArray();
+        var result = {};
+        $.each(fields, (_, field) => {
+            const value = field.value?.trim() || "";
+            result[field.name] = field.name === "phone" ?
+                value.replaceAll(" ", "").replaceAll("_", "") :
+                value;
+        });
+        return result;
+    }
+
     makeWebflowFormAjax = function (forms, successCallback, errorCallback) {
         forms.each(function () {
             var form = $(this);
@@ -234,12 +245,14 @@ $(function () {
                         doneBlock.hide();
                         failBlock.show();
                     },
-                }); return false;
+                }); 
+                return false;
             });
         });
     };
     makeWebflowFormAjax($("form"));
 });
+
 gsap.registerPlugin(ScrollTrigger);
 $(".main_stories").each(function (index) {
     let triggerElement = $(this);
